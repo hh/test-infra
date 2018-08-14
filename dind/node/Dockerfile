@@ -38,10 +38,16 @@ COPY docker_version /
 RUN mkdir -p /opt/cni/bin
 
 # kubeadm depends on kubelet depends on kubernetes-cni
-RUN dpkg -i kubectl.deb
 RUN dpkg -i kubernetes-cni.deb
+RUN dpkg -i kubectl.deb
 RUN dpkg -i kubelet.deb
-RUN dpkg -i kubeadm.deb
+RUN apt update
+RUN apt install wget
+ENV CRI_VERSION="v1.11.1"
+RUN wget https://github.com/kubernetes-incubator/cri-tools/releases/download/$CRI_VERSION/crictl-$CRI_VERSION-linux-amd64.tar.gz
+RUN tar zxvf crictl-*-linux-amd64.tar.gz -C /usr/local/bin
+RUN rm -f crictl-*-linux-amd64.tar.gz
+RUN dpkg -i --force depends kubeadm.deb
 
 # Get the component docker images last, because they're most likely to change.
 COPY kube-proxy.tar /
