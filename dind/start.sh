@@ -110,14 +110,11 @@ rules:
 EOPOLICY
   chmod 0600 /etc/kubernetes/audit-policy.yaml
   cat <<EOF > /etc/kubernetes/kubeadm.conf
-#apiServerExtraArgs:
-#  cert-extra-sans: $1
+# Only adding items not in 'kubeadm config print-default'
 apiVersion: kubeadm.k8s.io/v1alpha3
 kind: InitConfiguration
 kubernetesVersion: $(cat source_version | sed 's/^.//')
 auditPolicy:
-  logDir: /var/log/audit
-  logMaxAge: 2
   path: /etc/kubernetes/audit-policy.yaml
 featureGates:
   Auditing: true
@@ -127,7 +124,9 @@ bootstrapTokens:
 - groups:
   - system:bootstrappers:kubeadm:default-node-token
   token: abcdef.abcdefghijklmnop
-  #token: tzc9vo.ugspyk7o3jxxhak6
+apiServerCertSANs:
+$(echo $1 | sed -e 's: :\n:g' | sed 's:^:- :')
+# ^^^ SANs need to be in yaml list form starting from v1alpha3
 EOF
   chmod 0600 /etc/kubernetes/kubeadm.conf
   # Run kubeadm init to config a master.

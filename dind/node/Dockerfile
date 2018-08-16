@@ -25,6 +25,7 @@ COPY cluster /
 COPY kubectl.deb /
 COPY kubelet.deb /
 COPY kubernetes-cni.deb /
+COPY cri-tools.deb /
 COPY kubeadm.deb /
 
 # Grab a file with the version info (one for kubeadm, one for docker).
@@ -41,11 +42,8 @@ RUN mkdir -p /opt/cni/bin
 RUN dpkg -i kubectl.deb
 RUN dpkg -i kubernetes-cni.deb
 RUN dpkg -i kubelet.deb
-ENV CRI_VERSION="v1.11.1"
-RUN curl -L https://github.com/kubernetes-incubator/cri-tools/releases/download/$CRI_VERSION/crictl-$CRI_VERSION-linux-amd64.tar.gz | \
-    tar zxvf - -C /usr/local/bin
-# force due to dependency on missing cri deb for now
-RUN dpkg -i --force depends kubeadm.deb
+RUN dpkg -i cri-tools.deb
+RUN dpkg -i kubeadm.deb
 
 # Get the component docker images last, because they're most likely to change.
 COPY kube-proxy.tar /
