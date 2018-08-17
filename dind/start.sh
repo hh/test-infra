@@ -126,6 +126,7 @@ bootstrapTokens:
   token: abcdef.abcdefghijklmnop
 apiServerCertSANs:
 $(echo $1 | sed -e 's: :\n:g' | sed 's:^:- :')
+- kubernetes
 # ^^^ SANs need to be in yaml list form starting from v1alpha3
 EOF
   chmod 0600 /etc/kubernetes/kubeadm.conf
