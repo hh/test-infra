@@ -116,6 +116,7 @@ kind: InitConfiguration
 kubernetesVersion: $(cat source_version | sed 's/^.//')
 auditPolicy:
   path: /etc/kubernetes/audit-policy.yaml
+  logDir: /etc/kubernetes/audit
 featureGates:
   Auditing: true
 networking:
